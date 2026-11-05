@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Virtual Mouse — Control Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <!-- ── SVG Symbol Library ─────────────────────────────────────── -->
+  <svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <symbol id="ico-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
+        <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+      </symbol>
+      <symbol id="ico-mouse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2C9.24 2 7 4.24 7 7v10a5 5 0 0 0 10 0V7c0-2.76-2.24-5-5-5z"/>
+        <line x1="12" y1="2" x2="12" y2="8"/><line x1="9.5" y1="8" x2="14.5" y2="8"/>
+      </symbol>
+      <symbol id="ico-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="5 3 19 12 5 21 5 3"/>
+      </symbol>
+      <symbol id="ico-volume" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+      </symbol>
+      <symbol id="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"/>
+        <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </symbol>
+      <symbol id="ico-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+      </symbol>
+      <symbol id="ico-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </symbol>
+      <symbol id="ico-hand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 11V6a2 2 0 0 0-4 0v1M14 7V4a2 2 0 0 0-4 0v3M10 7.5V5a2 2 0 0 0-4 0v6"/>
+        <path d="M6 11v4a6 6 0 0 0 12 0v-4a2 2 0 0 0-4 0"/>
+      </symbol>
+      <symbol id="ico-activity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </symbol>
+      <symbol id="ico-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- ── App Shell ──────────────────────────────────────────────── -->
+  <div class="app-shell">
+
+    <!-- ── Sidebar ──────────────────────────────────────────────── -->
+    <aside class="sidebar">
+
+      <div class="sidebar-brand">
+        <div class="brand-mark">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 11V6a2 2 0 0 0-4 0v1M14 7V4a2 2 0 0 0-4 0v3M10 7.5V5a2 2 0 0 0-4 0v6"/>
+            <path d="M6 11v4a6 6 0 0 0 12 0v-4a2 2 0 0 0-4 0"/>
+          </svg>
+        </div>
+        <div class="brand-copy">
+          <span class="brand-name">AI VIRTUAL MOUSE</span>
+          <span class="brand-sub">Computer Vision Control</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-group">
+          <span class="nav-group-label">Control</span>
+          <a href="#" class="nav-item active" data-section="dashboard">
+            <svg class="nav-icon" width="16" height="16"><use href="#ico-grid"/></svg>
+            <span>Dashboard</span>
+            <span class="nav-pip"></span>
+          </a>
+          <a href="#" class="nav-item" data-section="virtual-mouse">
+            <svg class="nav-icon" width="16" height="16"><use href="#ico-mouse"/></svg>
+            <span>Virtual Mouse</span>
+          </a>
+          <a href="#" class="nav-item" data-section="media">
+            <svg class="nav-icon" width="16" height="16"><use href="#ico-play"/></svg>
+            <span>Media Mode</span>
+          </a>
+          <a href="#" class="nav-item" data-section="volume">
+            <svg class="nav-icon" width="16" height="16"><use href="#ico-volume"/></svg>
+            <span>Volume Mode</span>
+          </a>
+          <a href="#" class="nav-item" data-section="brightness">
+            <svg class="nav-icon" width="16" height="16"><use href="#ico-sun"/></svg>
+            <span>Brightness Mode</span>
+          </a>
+          <a href="#" class="nav-item" data-section="voice">
+            <svg class="nav-icon" width="16" height="16"><use href="#ico-mic"/></svg>
+            <span>Voice Mode</span>
+          </a>
+        </div>
+        <div class="nav-group">
+          <span class="nav-group-label">System</span>
+          <a href="#" class="nav-item" data-section="settings">
+            <svg class="nav-icon" width="16" height="16"><use href="#ico-settings"/></svg>
+            <span>Settings</span>
+          </a>
+        </div>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="sys-pill">
+          <span class="sys-dot" id="sidebarStatusDot"></span>
+          <div class="sys-copy">
+            <span class="sys-eyebrow">System Status</span>
+            <span class="sys-label" id="sidebarStatus">AI Engine Ready</span>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ── Main Area ─────────────────────────────────────────────── -->
+    <div class="main-area">
+
+      <!-- ── Topbar ─────────────────────────────────────────────── -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <span class="topbar-crumb">Control Center <span class="crumb-arrow">›</span> Dashboard</span>
+          <h1 class="topbar-title">AI Virtual Mouse</h1>
+        </div>
+        <div class="topbar-right">
+          <div class="topbar-metric">
+            <span class="tm-label">Vision Engine</span>
+            <span class="tm-value" id="engineStatus">Standby</span>
+          </div>
+          <div class="topbar-sep"></div>
+          <div class="status-pill" id="connectionPill">
+            <span class="pill-dot"></span>
+            <span>System Ready</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ── Scrollable Content ────────────────────────────────── -->
+      <main class="content">
+
+        <!-- ── Command Center ──────────────────────────────────── -->
+        <section class="command-center">
+          <div class="cc-left">
+            <div class="cc-identity">
+              <p class="cc-descriptor">Hands-free computer interaction powered by computer vision</p>
+              <h2 class="cc-headline">AI Virtual Mouse</h2>
+            </div>
+            <div class="cc-actions">
+              <button class="btn-primary" id="startBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Start Virtual Mouse
+              </button>
+              <button class="btn-danger" id="stopBtn" style="display:none">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>
+                Stop Engine
+              </button>
+            </div>
+          </div>
+          <div class="cc-right">
+            <div class="cc-metrics">
+              <div class="cc-metric">
+                <span class="cc-m-label">System</span>
+                <span class="cc-m-value is-ready">Ready</span>
+              </div>
+              <div class="cc-m-rule"></div>
+              <div class="cc-metric">
+                <span class="cc-m-label">Camera</span>
+                <span class="cc-m-value" id="cmdCameraStatus">Offline</span>
+              </div>
+              <div class="cc-m-rule"></div>
+              <div class="cc-metric">
+                <span class="cc-m-label">AI Engine</span>
+                <span class="cc-m-value is-ready">Ready</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ── Telemetry Row ───────────────────────────────────── -->
+        <div class="telemetry-row">
+
+          <div class="t-card">
+            <div class="t-card-header">
+              <svg class="t-card-icon" width="14" height="14"><use href="#ico-mouse"/></svg>
+              <span class="t-card-label">Virtual Mouse</span>
+              <span class="t-dot" id="mouseDot"></span>
+            </div>
+            <div class="t-card-value" id="mouseStatus">OFF</div>
+            <div class="t-card-sub">Status</div>
+          </div>
+
+          <div class="t-card">
+            <div class="t-card-header">
+              <svg class="t-card-icon" width="14" height="14"><use href="#ico-hand"/></svg>
+              <span class="t-card-label">Hand Detection</span>
+              <span class="t-dot" id="handDot"></span>
+            </div>
+            <div class="t-card-value" id="handStatus">Waiting</div>
+            <div class="t-card-sub" id="landmarkCount">— landmarks</div>
+          </div>
+
+          <div class="t-card">
+            <div class="t-card-header">
+              <svg class="t-card-icon" width="14" height="14"><use href="#ico-zap"/></svg>
+              <span class="t-card-label">Current Gesture</span>
+              <span class="t-dot" id="gestureDot"></span>
+            </div>
+            <div class="t-card-value" id="currentGesture">None</div>
+            <div class="t-card-sub">AI Classifier</div>
+          </div>
+
+          <div class="t-card">
+            <div class="t-card-header">
+              <svg class="t-card-icon" width="14" height="14"><use href="#ico-activity"/></svg>
+              <span class="t-card-label">Performance</span>
+              <span class="t-dot" id="perfDot"></span>
+            </div>
+            <div class="t-card-value" id="fpsDisplay">— FPS</div>
+            <div class="t-card-sub" id="perfStatus">Standby</div>
+          </div>
+
+        </div>
+
+        <!-- ── Workspace Row ───────────────────────────────────── -->
+        <div class="workspace">
+
+          <!-- ── Vision Panel ─────────────────────────────────── -->
+          <div class="vision-panel">
+
+            <div class="vision-header">
+              <div class="vh-left">
+                <span class="vh-label">Vision Engine</span>
+                <div class="live-chip" id="liveBadge">
+                  <span class="live-dot" id="liveDot"></span>
+                  <span id="liveText">Standby</span>
+                </div>
+              </div>
+              <div class="vh-right">
+                <div class="vh-stat">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                  <span id="visionFps">— FPS</span>
+                </div>
+                <div class="vh-stat">
+                  <span class="det-dot" id="detectionDot"></span>
+                  <span id="detectionText">No Signal</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Camera Frame -->
+            <div class="camera-frame">
+
+              <!-- Corner brackets (decorative, CSS) -->
+              <div class="cam-bracket cam-bracket--tl"></div>
+              <div class="cam-bracket cam-bracket--tr"></div>
+              <div class="cam-bracket cam-bracket--bl"></div>
+              <div class="cam-bracket cam-bracket--br"></div>
+
+              <!-- Standby State -->
+              <div class="cam-standby" id="cameraStandby">
+                <div class="standby-body">
+                  <div class="standby-glyph">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                      <path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/>
+                    </svg>
+                    <div class="standby-ring r1"></div>
+                    <div class="standby-ring r2"></div>
+                  </div>
+                  <div class="standby-text">
+                    <strong>Vision Engine Standby</strong>
+                    <span>Start Virtual Mouse to activate camera and hand tracking</span>
+                  </div>
+                  <div class="standby-indicators">
+                    <div class="si-row">
+                      <span class="si-dot si-red"></span><span>Camera offline</span>
+                    </div>
+                    <div class="si-row">
+                      <span class="si-dot si-amber"></span><span>MediaPipe idle</span>
+                    </div>
+                    <div class="si-row">
+                      <span class="si-dot si-green"></span><span>System ready</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Browser Vision Feed -->
+              <video id="cameraFeed"
+                     autoplay
+                     playsinline
+                     muted
+                     aria-label="Browser camera feed"></video>
+
+              <!-- Browser camera controls -->
+              <div class="camera-view-controls" id="cameraViewControls">
+                <button class="camera-view-btn" id="cameraMaximizeBtn" type="button"
+                        title="Maximize camera view" aria-label="Maximize camera view">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                       stroke="currentColor" stroke-width="1.8">
+                    <path d="M8 3H3v5M16 3h5v5M8 21H3v-5M21 16v5h-5"/>
+                  </svg>
+                </button>
+
+                <button class="camera-view-btn" id="cameraMinimizeBtn" type="button"
+                        title="Minimize camera view" aria-label="Minimize camera view"
+                        style="display:none;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                       stroke="currentColor" stroke-width="1.8">
+                    <path d="M9 3H5a2 2 0 0 0-2 2v4M15 3h4a2 2 0 0 1 2 2v4M9 21H5a2 2 0 0 1-2-2v-4M21 15v4a2 2 0 0 1-2 2h-4"/>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Separate OpenCV window state -->
+              <div class="camera-window-state" id="cameraWindowState">
+                <div class="camera-window-icon">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+                       stroke="currentColor" stroke-width="1.5">
+                    <rect x="3" y="5" width="18" height="14" rx="2"/>
+                    <path d="M8 5V3h8v2"/>
+                  </svg>
+                </div>
+                <strong>Separate Camera Window</strong>
+                <span>OpenCV is processing the active webcam.</span>
+              </div>
+            </div>
+
+            <!-- Vision Footer -->
+            <div class="vision-footer">
+              <div class="vf-item">
+                <span class="vf-key">Gesture</span>
+                <span class="vf-val" id="overlayGesture">—</span>
+              </div>
+              <div class="vf-sep"></div>
+              <div class="vf-item">
+                <span class="vf-key">Mode</span>
+                <span class="vf-val vf-accent" id="overlayMode">—</span>
+              </div>
+              <div class="vf-sep"></div>
+              <div class="vf-item">
+                <span class="vf-key">Landmarks</span>
+                <span class="vf-val" id="overlayLandmarks">—</span>
+              </div>
+            </div>
+
+          </div><!-- /vision-panel -->
+
+          <!-- ── Control Panel ────────────────────────────────── -->
+          <div class="control-panel">
+
+            <!-- Active Mode Section -->
+            <div class="cp-section">
+              <div class="cp-section-head">
+                <span class="cp-tag">Control</span>
+                <span class="cp-title">Active Mode</span>
+              </div>
+              <div class="active-mode">
+                <div class="am-name" id="activeModeName">Normal Mode</div>
+                <div class="am-desc" id="activeModeDesc">AI control profile active</div>
+              </div>
+
+              <!-- Live instructions for the currently active mode -->
+              <div class="mode-guide" id="modeGuide">
+                <div class="mode-guide-head">
+                  <span class="mode-guide-title" id="modeGuideTitle">Normal Mode — Gesture Instructions</span>
+                  <span class="mode-guide-count" id="modeGuideCount">5 actions</span>
+                </div>
+                <div class="mode-guide-summary" id="modeGuideSummary">Use your hand as the mouse. Keep the camera view clear and perform one gesture at a time.</div>
+                <div class="mode-guide-list" id="modeGuideList"></div>
+              </div>
+
+              <div class="mode-list" id="modeList">
+                <div class="mode-row active" data-mode="normal">
+                  <span class="mr-bar"></span>
+                  <span class="mr-name">Normal</span>
+                  <span class="mr-status">Active</span>
+                </div>
+                <div class="mode-row" data-mode="media">
+                  <span class="mr-bar"></span>
+                  <span class="mr-name">Media</span>
+                  <span class="mr-status">Standby</span>
+                </div>
+                <div class="mode-row" data-mode="volume">
+                  <span class="mr-bar"></span>
+                  <span class="mr-name">Volume</span>
+                  <span class="mr-status">Standby</span>
+                </div>
+                <div class="mode-row" data-mode="brightness">
+                  <span class="mr-bar"></span>
+                  <span class="mr-name">Brightness</span>
+                  <span class="mr-status">Standby</span>
+                </div>
+                <div class="mode-row" data-mode="voice">
+                  <span class="mr-bar"></span>
+                  <span class="mr-name">Voice</span>
+                  <span class="mr-status">Standby</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Gesture Library Section -->
+            <div class="cp-section gesture-section">
+              <div class="cp-section-head">
+                <span class="cp-tag">Detection</span>
+                <span class="cp-title">Gesture Library</span>
+              </div>
+              <div class="gesture-grid">
+                <div class="g-card">
+                  <div class="g-icon">☝️</div>
+                  <div class="g-info">
+                    <span class="g-name">Point</span>
+                    <span class="g-action">Move cursor</span>
+                  </div>
+                  <span class="g-code">MOVE</span>
+                </div>
+                <div class="g-card">
+                  <div class="g-icon">✌️</div>
+                  <div class="g-info">
+                    <span class="g-name">Peace</span>
+                    <span class="g-action">Left click</span>
+                  </div>
+                  <span class="g-code">CLICK</span>
+                </div>
+                <div class="g-card">
+                  <div class="g-icon">🤏</div>
+                  <div class="g-info">
+                    <span class="g-name">Pinch</span>
+                    <span class="g-action">Right click</span>
+                  </div>
+                  <span class="g-code">RIGHT</span>
+                </div>
+                <div class="g-card">
+                  <div class="g-icon">✊</div>
+                  <div class="g-info">
+                    <span class="g-name">Fist</span>
+                    <span class="g-action">Scroll</span>
+                  </div>
+                  <span class="g-code">SCROLL</span>
+                </div>
+                <div class="g-card">
+                  <div class="g-icon">🖐️</div>
+                  <div class="g-info">
+                    <span class="g-name">Open hand</span>
+                    <span class="g-action">Drag</span>
+                  </div>
+                  <span class="g-code">DRAG</span>
+                </div>
+                <div class="g-card">
+                  <div class="g-icon">👌</div>
+                  <div class="g-info">
+                    <span class="g-name">OK</span>
+                    <span class="g-action">Double click</span>
+                  </div>
+                  <span class="g-code">DBL</span>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /control-panel -->
+
+        </div><!-- /workspace -->
+
+
+        <!-- Sidebar information pages. Dashboard content above remains unchanged. -->
+        <section class="info-page" data-page="virtual-mouse" hidden>
+          <div class="info-hero"><p class="info-eyebrow">CONTROL GUIDE</p><h2>Virtual Mouse</h2><p>Control the Windows pointer using hand landmarks detected by the camera. Start the engine from Dashboard and keep your hand clearly visible in the camera view.</p></div>
+          <div class="info-card-grid">
+            <article class="info-card"><span class="info-card-icon">☝️</span><h3>Move Cursor</h3><p>Raise your index finger and move it inside the camera view to move the pointer.</p></article>
+            <article class="info-card"><span class="info-card-icon">🤏</span><h3>Left Click</h3><p>Bring your thumb and index finger together to perform a left click.</p></article>
+            <article class="info-card"><span class="info-card-icon">🤏</span><h3>Right Click</h3><p>Bring your thumb and middle finger together to perform a right click.</p></article>
+            <article class="info-card"><span class="info-card-icon">🖐️</span><h3>Drag</h3><p>Use the open-hand gesture shown in the dashboard's Normal Mode guide to drag items. Keep the gesture steady while moving.</p></article>
+            <article class="info-card"><span class="info-card-icon">✊</span><h3>Scroll</h3><p>Use the fist gesture shown in the Normal Mode guide; move your hand as instructed by the live gesture feedback.</p></article>
+            <article class="info-card"><span class="info-card-icon">👌</span><h3>Double Click</h3><p>Bring your thumb and index finger together in the configured double-click gesture, as shown in the dashboard guide.</p></article>
+          </div>
+          <div class="info-note"><strong>Tips</strong><ul><li>Use good lighting and keep the full hand inside the camera frame.</li><li>Start with Dashboard → Start Virtual Mouse, then select Browser Vision or Separate Window.</li><li>Use Stop Engine on Dashboard when finished.</li></ul></div>
+        </section>
+
+        <section class="info-page" data-page="media" hidden>
+          <div class="info-hero"><p class="info-eyebrow">GESTURE SHORTCUTS</p><h2>Media Mode</h2><p>Control supported media playback actions with thumb-to-finger gestures after Media Mode is activated.</p></div>
+          <div class="info-steps"><div class="info-step"><span class="step-number">01</span><div><h3>Activate Media Mode</h3><p>Hold the pinky-up pose with index, middle, and ring fingers down until the mode activates.</p></div></div><div class="info-step"><span class="step-number">02</span><div><h3>Play / Pause</h3><p>Bring your thumb and index finger together.</p></div></div><div class="info-step"><span class="step-number">03</span><div><h3>Next Track</h3><p>Bring your thumb and middle finger together.</p></div></div><div class="info-step"><span class="step-number">04</span><div><h3>Previous Track</h3><p>Bring your thumb and ring finger together.</p></div></div><div class="info-step"><span class="step-number">05</span><div><h3>Exit Media Mode</h3><p>Release the activation pose first, then show an open palm to exit.</p></div></div></div>
+          <div class="info-note"><strong>Tip</strong><p>Keep gestures distinct and briefly release between actions to avoid accidental repeated commands.</p></div>
+        </section>
+
+        <section class="info-page" data-page="volume" hidden>
+          <div class="info-hero"><p class="info-eyebrow">SYSTEM AUDIO</p><h2>Volume Mode</h2><p>Adjust system volume by changing the distance between your thumb and index finger.</p></div>
+          <div class="info-steps"><div class="info-step"><span class="step-number">01</span><div><h3>Activate</h3><p>Bring thumb and index finger together, with middle, ring, and pinky fingers down, and hold until Volume Mode activates.</p></div></div><div class="info-step"><span class="step-number">02</span><div><h3>Adjust Volume</h3><p>Keep index and middle fingers raised while ring and pinky stay down. Change the thumb-to-index distance to adjust volume; the value is mapped and smoothed by the engine.</p></div></div><div class="info-step"><span class="step-number">03</span><div><h3>Return to Normal Mode</h3><p>Move out of the volume pose. The engine returns to Normal Mode after its configured exit delay.</p></div></div></div>
+          <div class="info-note"><strong>Tip</strong><p>Keep your hand inside the camera frame and make gradual distance changes for smoother control.</p></div>
+        </section>
+
+        <section class="info-page" data-page="brightness" hidden>
+          <div class="info-hero"><p class="info-eyebrow">DISPLAY CONTROL</p><h2>Brightness Mode</h2><p>Adjust display brightness using the thumb-to-index distance while holding the configured three-finger pose.</p></div>
+          <div class="info-steps"><div class="info-step"><span class="step-number">01</span><div><h3>Activate</h3><p>Bring thumb and index finger together and hold until Brightness Mode activates.</p></div></div><div class="info-step"><span class="step-number">02</span><div><h3>Adjust Brightness</h3><p>Raise index, middle, and ring fingers while keeping the pinky down. Change the distance between thumb and index finger to adjust brightness.</p></div></div><div class="info-step"><span class="step-number">03</span><div><h3>Exit</h3><p>Show an open palm to return to Normal Mode, or move out of the brightness pose and wait for the configured exit delay.</p></div></div></div>
+          <div class="info-note"><strong>Compatibility</strong><p>Brightness control depends on the computer/display and the brightness controller supported by the project.</p></div>
+        </section>
+
+        <section class="info-page" data-page="voice" hidden>
+          <div class="info-hero"><p class="info-eyebrow">OFFLINE SPEECH RECOGNITION</p><h2>Voice Mode</h2><p>The project uses Vosk with SpeechRecognition for offline English command recognition. Voice commands require a working microphone and the local Vosk model.</p></div>
+          <h3 class="info-section-title">Supported voice phrases</h3>
+          <div class="voice-command-grid"><span>Open Chrome</span><span>Open Google</span><span>Open YouTube</span><span>Take screenshot</span><span>Capture screen</span><span>Mute</span><span>Unmute</span><span>Volume up</span><span>Volume down</span><span>Increase volume</span><span>Decrease volume</span><span>Open file explorer</span><span>Open explorer</span><span>Close window</span><span>Close this window</span><span>Stop</span><span>Exit</span></div>
+          <div class="info-note"><strong>How to use</strong><ul><li>Make sure the microphone is connected and allowed by Windows.</li><li>Ensure the Vosk model folder exists at <code>models/vosk-model-small-en-us-0.15</code>.</li><li>Speak one supported phrase clearly in English. Recognition runs locally, but commands are acted on only when the voice listener is running and the command callback is connected.</li></ul></div>
+        </section>
+
+        <section class="info-page settings-page" data-page="settings" hidden>
+          <div class="info-hero">
+            <p class="info-eyebrow">ACCOUNT &amp; SECURITY</p>
+            <h2>Account &amp; Security</h2>
+            <p>Review the protections built into your AI Virtual Mouse dashboard and manage your signed-in session.</p>
+          </div>
+
+          <div class="settings-security-grid">
+            <article class="settings-security-card">
+              <span class="settings-security-icon">🔐</span>
+              <div><h3>Password Protection</h3><p>Account passwords are stored as password hashes, not as readable plain text.</p></div>
+              <span class="security-status">Protected</span>
+            </article>
+            <article class="settings-security-card">
+              <span class="settings-security-icon">🛡️</span>
+              <div><h3>Session &amp; Request Security</h3><p>Authenticated sessions use a server-side signing key, and protected form/API requests use CSRF tokens.</p></div>
+              <span class="security-status">Enabled</span>
+            </article>
+            <article class="settings-security-card">
+              <span class="settings-security-icon">⏱️</span>
+              <div><h3>Session Timeout</h3><p>Your dashboard session is configured to expire after 30 minutes. Sign in again if your session expires.</p></div>
+              <span class="security-status">30 minutes</span>
+            </article>
+            <article class="settings-security-card">
+              <span class="settings-security-icon">🚦</span>
+              <div><h3>Login Protection</h3><p>Repeated login attempts are rate-limited to help reduce password-guessing attempts.</p></div>
+              <span class="security-status">Enabled</span>
+            </article>
+          </div>
+
+          <div class="info-note settings-help-note">
+            
+          </div>
+
+          <div class="settings-card settings-logout-card">
+            <div><p class="info-eyebrow">END SESSION</p><h3>Sign out</h3><p>Log out of your account and end this authenticated session in this browser.</p></div>
+            <form action="/logout" method="POST" class="logout-form"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button type="submit" class="logout-button">Logout</button></form>
+          </div>
+          
+<div class="settings-card">
+  <div>
+    <p class="info-eyebrow">YOUR ACCOUNT</p>
+    <h3>Account Profile</h3>
+    <p>View and manage your username and email address.</p>
+  </div>
+  <button type="button" class="logout-button" data-open-section="account-profile">
+    Open Account Profile
+  </button>
+  
+<div class="settings-card">
+  <div>
+    <p class="info-eyebrow">ACCOUNT SECURITY</p>
+    <h3>Change Password</h3>
+    <p>Change your current password after verifying it.</p>
+  </div>
+  <button
+    type="button"
+    class="logout-button"
+    data-open-section="change-password"
+  >
+    Change Password
+  </button>
+</div>
+
+</div>
+
+<div class="settings-card">
+  <div>
+    <p class="info-eyebrow">ACCOUNT RECOVERY</p>
+    <h3>Forgot Password?</h3>
+    <p>Reset your password using a secure link sent to your registered email address.</p>
+  </div>
+
+  <button
+    type="button"
+    class="logout-button"
+    data-open-section="forgot-password">
+    Reset it by email
+  </button>
+</div>
+
+
+        </section>
+
+        
+<!-- Account Profile Page -->
+<section class="info-page" data-page="account-profile" hidden>
+  <div class="info-hero">
+    <p class="info-eyebrow">ACCOUNT MANAGEMENT</p>
+    <h2>Account Profile</h2>
+    <p>View and manage your account information.</p>
+  </div>
+
+  
+<div class="settings-card">
+  <div>
+    <h3>Profile Information</h3>
+
+    <p>Username</p>
+    <p id="profileUsername">Loading...</p>
+
+    <p>Email Address</p>
+    <p id="profileEmail">Loading...</p>
+
+    <p>Account Created</p>
+    <p id="profileCreatedAt">Loading...</p>
+    
+<button
+  type="button"
+  class="logout-button"
+  data-open-section="edit-profile">
+  Edit Profile
+</button>
+  </div>
+</div>
+
+
+  <button type="button" class="logout-button" data-open-section="settings">
+    Back to Settings
+  </button>
+</section>
+
+<!-- Edit Profile Page -->
+<section class="info-page" data-page="edit-profile" hidden>
+  <div class="info-hero">
+    <p class="info-eyebrow">ACCOUNT MANAGEMENT</p>
+    <h2>Edit Profile</h2>
+    <p>Update your username and email address.</p>
+  </div>
+
+  
+<div class="settings-card">
+  <form id="editProfileForm">
+    <h3>Edit Account Information</h3>
+
+    <p id="editProfileMessage" role="status" aria-live="polite"></p>
+
+    <div>
+      <label for="editProfileUsername">Username</label>
+      <input
+        type="text"
+        id="editProfileUsername"
+        name="username"
+        maxlength="50"
+        required
+        autocomplete="username"
+        placeholder="Enter username">
+    </div>
+
+    <div>
+      <label for="editProfileEmail">Email Address</label>
+      <input
+        type="email"
+        id="editProfileEmail"
+        name="email"
+        maxlength="254"
+        required
+        autocomplete="email"
+        placeholder="Enter email address">
+    </div>
+
+    <button type="submit" class="logout-button">
+      Save Changes
+    </button>
+  </form>
+</div>
+
+
+  <button
+    type="button"
+    class="logout-button"
+    data-open-section="account-profile">
+    Back to Account Profile
+  </button>
+</section>
+
+
+<!-- Change Password Page -->
+<section class="info-page" data-page="change-password" hidden>
+  <div class="info-hero">
+    <p class="info-eyebrow">ACCOUNT SECURITY</p>
+    <h2>Change Password</h2>
+    <p>Update your account password securely.</p>
+  </div>
+
+  <div class="settings-card">
+    <form id="changePasswordForm" method="POST" action="/account/password/change">
+      <h3>Update Your Password</h3>
+
+      <p id="changePasswordMessage" role="status" aria-live="polite"></p>
+
+      <div>
+        <label for="currentPassword">Current Password</label>
+        <input
+          type="password"
+          id="currentPassword"
+          name="current_password"
+          required
+          autocomplete="current-password"
+          placeholder="Enter current password"
+        >
+      </div>
+
+      <div>
+        <label for="newPassword">New Password</label>
+        <input
+          type="password"
+          id="newPassword"
+          name="new_password"
+          required
+          minlength="8"
+          autocomplete="new-password"
+          placeholder="Enter new password"
+        >
+      </div>
+
+      <div>
+        <label for="confirmNewPassword">Confirm New Password</label>
+        <input
+          type="password"
+          id="confirmNewPassword"
+          name="confirm_password"
+          required
+          minlength="8"
+          autocomplete="new-password"
+          placeholder="Confirm new password"
+        >
+      </div>
+
+      <button type="submit" class="logout-button">
+        Update Password
+      </button>
+    </form>
+  </div>
+
+  <button
+    type="button"
+    class="logout-button"
+    data-open-section="settings"
+  >
+    Back to Settings
+  </button>
+</section>
+
+
+<!-- Forgot Password Page -->
+<section class="info-page" data-page="forgot-password" hidden>
+  <div class="info-hero">
+    <p class="info-eyebrow">ACCOUNT RECOVERY</p>
+    <h2>Forgot Password?</h2>
+    <p>Enter your registered email address. We will send you a secure password reset link.</p>
+  </div>
+
+  <div class="settings-card">
+    <form id="forgotPasswordForm">
+      <h3>Reset Password by Email</h3>
+
+      <p id="forgotPasswordMessage" role="status" aria-live="polite"></p>
+
+      <div>
+        <label for="forgotPasswordEmail">Registered Email Address</label>
+        <input
+          type="email"
+          id="forgotPasswordEmail"
+          name="email"
+          required
+          maxlength="254"
+          autocomplete="email"
+          placeholder="Enter your registered email">
+      </div>
+
+      <button type="submit" class="logout-button" id="forgotPasswordSubmit">
+        Send Reset Link
+      </button>
+    </form>
+  </div>
+
+  <button
+    type="button"
+    class="logout-button"
+    data-open-section="change-password">
+    Back to Change Password
+  </button>
+
+  <button
+    type="button"
+    class="logout-button"
+    data-open-section="settings">
+    Back to Settings
+  </button>
+</section>
+
+
+
+
+
+      </main>
+
+    </div><!-- /main-area -->
+  </div><!-- /app-shell -->
+
+  <!-- Camera Choice Modal -->
+<div class="camera-modal" id="cameraChoiceModal">
+    <div class="camera-modal-backdrop"></div>
+
+    <div class="camera-modal-box">
+
+        <div class="camera-modal-header">
+            <div>
+                <span class="modal-eyebrow">VISION ENGINE</span>
+                <h2>Camera Initialization</h2>
+                <p>Choose how you want to use the camera.</p>
+            </div>
+
+            <button class="modal-close" id="cameraModalClose">
+                ×
+            </button>
+        </div>
+
+        <div class="camera-options">
+
+            <!-- Browser Camera -->
+            <button class="camera-option" id="browserCameraOption">
+
+                <div class="camera-option-icon">
+                    <svg width="28" height="28"
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.7">
+                        <rect x="3" y="4" width="18" height="16" rx="2"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                </div>
+
+                <div class="camera-option-content">
+                    <span class="camera-option-label">
+                        Browser Vision
+                    </span>
+
+                    <span class="camera-option-title">
+                        Camera inside dashboard
+                    </span>
+
+                    <span class="camera-option-description">
+                        Use your webcam directly inside this interface.
+                        The camera can be minimized or maximized.
+                    </span>
+                </div>
+
+                <span class="camera-option-arrow">→</span>
+
+            </button>
+
+
+            <!-- Separate Window -->
+            <button class="camera-option" id="separateCameraOption">
+
+                <div class="camera-option-icon">
+                    <svg width="28" height="28"
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.7">
+                        <rect x="3" y="5" width="18" height="14" rx="2"/>
+                        <path d="M8 5V3h8v2"/>
+                    </svg>
+                </div>
+
+                <div class="camera-option-content">
+                    <span class="camera-option-label">
+                        Separate Window
+                    </span>
+
+                    <span class="camera-option-title">
+                        Open OpenCV camera window
+                    </span>
+
+                    <span class="camera-option-description">
+                        Use the existing desktop camera window
+                        for AI gesture processing.
+                    </span>
+                </div>
+
+                <span class="camera-option-arrow">→</span>
+
+            </button>
+
+        </div>
+
+        <button class="camera-modal-cancel" id="cameraModalCancel">
+            Cancel
+        </button>
+
+    </div>
+</div>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>

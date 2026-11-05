@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login — AI Virtual Mouse</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-family: "Segoe UI", Arial, sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 20% 20%,
+                    rgba(0, 220, 190, 0.08),
+                    transparent 35%
+                ),
+                radial-gradient(
+                    circle at 80% 80%,
+                    rgba(0, 140, 255, 0.07),
+                    transparent 35%
+                ),
+                #070b16;
+
+            color: #eaf2ff;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+
+            background-image:
+                linear-gradient(
+                    rgba(255,255,255,0.018) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255,255,255,0.018) 1px,
+                    transparent 1px
+                );
+
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+
+        .auth-container {
+            position: relative;
+            z-index: 1;
+
+            width: 100%;
+            max-width: 460px;
+
+            padding: 20px;
+        }
+
+        .auth-card {
+            padding: 38px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(20, 28, 47, 0.97),
+                    rgba(10, 16, 30, 0.97)
+                );
+
+            border: 1px solid rgba(0, 220, 190, 0.16);
+            border-radius: 18px;
+
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, 0.45),
+                0 0 40px rgba(0, 220, 190, 0.04);
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .brand-icon {
+            width: 52px;
+            height: 52px;
+
+            margin: 0 auto 14px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 1px solid rgba(0, 220, 190, 0.35);
+            border-radius: 14px;
+
+            color: #00e6c3;
+            background: rgba(0, 220, 190, 0.07);
+
+            font-size: 24px;
+
+            box-shadow:
+                0 0 25px rgba(0, 220, 190, 0.08);
+        }
+
+        .brand-name {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+
+            color: #00e6c3;
+        }
+
+        .brand-subtitle {
+            margin-top: 5px;
+
+            font-size: 12px;
+            color: #64738f;
+        }
+
+        .title {
+            margin-bottom: 7px;
+
+            font-size: 27px;
+            font-weight: 700;
+            text-align: center;
+
+            color: #f1f6ff;
+        }
+
+        .description {
+            margin-bottom: 28px;
+
+            text-align: center;
+            font-size: 13px;
+            line-height: 1.5;
+
+            color: #71809d;
+        }
+
+        .form-group {
+            margin-bottom: 19px;
+        }
+
+        .form-label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-size: 12px;
+            font-weight: 600;
+
+            color: #a8b6ce;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            height: 46px;
+
+            padding: 0 14px;
+
+            border: 1px solid #26334d;
+            border-radius: 9px;
+
+            outline: none;
+
+            background: #0c1322;
+            color: #eaf2ff;
+
+            font-size: 14px;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .form-input::placeholder {
+            color: #46536b;
+        }
+
+        .form-input:focus {
+            border-color: #00cdb5;
+
+            background: #0d1627;
+
+            box-shadow:
+                0 0 0 3px rgba(0, 220, 190, 0.08);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+
+            border: none;
+            background: transparent;
+
+            color: #64738f;
+
+            cursor: pointer;
+
+            font-size: 12px;
+        }
+
+        .password-toggle:hover {
+            color: #00e6c3;
+        }
+
+        .login-button {
+            width: 100%;
+            height: 47px;
+
+            margin-top: 8px;
+
+            border: none;
+            border-radius: 9px;
+
+            background: linear-gradient(
+                135deg,
+                #00d8bd,
+                #00bfa8
+            );
+
+            color: #04120f;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 8px 24px rgba(0, 220, 190, 0.14);
+
+            transition:
+                transform 0.15s ease,
+                box-shadow 0.15s ease,
+                filter 0.15s ease;
+        }
+
+        .login-button:hover {
+            transform: translateY(-1px);
+
+            filter: brightness(1.06);
+
+            box-shadow:
+                0 10px 30px rgba(0, 220, 190, 0.22);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .register-link {
+            margin-top: 24px;
+
+            text-align: center;
+
+            font-size: 13px;
+            color: #65738d;
+        }
+
+        .register-link a {
+            color: #00d8bd;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .security-note {
+            margin-top: 25px;
+            padding-top: 18px;
+
+            border-top: 1px solid rgba(255,255,255,0.06);
+
+            text-align: center;
+
+            font-size: 10px;
+            letter-spacing: 0.3px;
+
+            color: #46536b;
+        }
+
+        @media (max-width: 520px) {
+            .auth-container {
+                padding: 15px;
+            }
+
+            .auth-card {
+                padding: 28px 22px;
+            }
+
+            .title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="auth-container">
+
+        <section class="auth-card">
+
+            <!-- Brand -->
+            <div class="brand">
+
+                <div class="brand-icon">
+                    🖱
+                </div>
+
+                <div class="brand-name">
+                    AI Virtual Mouse
+                </div>
+
+                <div class="brand-subtitle">
+                    Computer Vision Control Center
+                </div>
+
+            </div>
+
+            <!-- Heading -->
+            <h1 class="title">
+                Welcome Back
+            </h1>
+
+            <p class="description">
+                Sign in to access your AI Virtual Mouse control center.
+            </p>
+
+            {% if error %}
+    <div style="
+        margin-bottom: 18px;
+        padding: 12px 14px;
+        border: 1px solid rgba(255, 80, 100, 0.25);
+        border-radius: 8px;
+        background: rgba(255, 60, 80, 0.08);
+        color: #ff8f9d;
+        font-size: 12px;
+    ">
+        {{ error }}
+    </div>
+{% endif %}
+
+            <!-- Login Form -->
+            <form
+                id="loginForm"
+                method="POST"
+                action="/login"
+            >
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                <!-- Username / Email -->
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
+                        for="loginIdentifier"
+                    >
+                        Username or Email
+                    </label>
+
+                    <input
+                        class="form-input"
+                        type="text"
+                        id="loginIdentifier"
+                        name="identifier"
+                        placeholder="Enter username or email"
+                        autocomplete="username"
+                        required
+                    >
+
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
+                        for="loginPassword"
+                    >
+                        Password
+                    </label>
+
+                    <div class="input-wrapper">
+
+                        <input
+                            class="form-input"
+                            type="password"
+                            id="loginPassword"
+                            name="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            id="loginPasswordToggle"
+                        >
+                            Show
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <!-- Login -->
+                <button
+                    type="submit"
+                    class="login-button"
+                >
+                    Login
+                </button>
+
+            </form>
+
+            <!-- Register -->
+            <div class="register-link">
+                Don't have an account?
+                <a href="/register">
+                    Create Account
+                </a>
+            </div>
+
+            <!-- Security -->
+            <div class="security-note">
+                🔒 Secure authentication for AI Virtual Mouse
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+        const loginPassword =
+            document.getElementById("loginPassword");
+
+        const loginPasswordToggle =
+            document.getElementById("loginPasswordToggle");
+
+
+        loginPasswordToggle.addEventListener("click", function () {
+
+            if (loginPassword.type === "password") {
+                loginPassword.type = "text";
+                loginPasswordToggle.textContent = "Hide";
+            } else {
+                loginPassword.type = "password";
+                loginPasswordToggle.textContent = "Show";
+            }
+
+        });
+
+
+    </script>
+
+</body>
+</html>

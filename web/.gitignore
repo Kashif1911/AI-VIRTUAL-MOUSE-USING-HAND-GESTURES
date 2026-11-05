@@ -1,0 +1,35 @@
+# Python cache and bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Distribution / build
+dist/
+build/
+*.egg-info/
+
+# Note: bundled model files are intentionally not ignored so a release checkout can include them.
+
+.secret_key

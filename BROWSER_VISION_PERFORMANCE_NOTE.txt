@@ -1,0 +1,12 @@
+BROWSER VISION PERFORMANCE NOTE
+================================
+This build reduces Browser Vision input to 480x360, limits uploads to 25 FPS,
+uses lower JPEG quality, and avoids rendering an unnecessary OpenCV window in
+Browser Vision mode. Separate Window mode is left functionally unchanged.
+
+IMPORTANT: Chromium-based browsers throttle JavaScript timers and rendering
+when a tab/window is backgrounded or minimized. If Browser Vision still slows
+only when Chrome is minimized, that is browser background throttling rather
+than the hand-tracking algorithm. For the most reliable desktop-wide use,
+keep the dashboard window unminimized (it can be placed behind other apps),
+or use Separate Window mode, which captures directly through OpenCV.

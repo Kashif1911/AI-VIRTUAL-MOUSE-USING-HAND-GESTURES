@@ -1,0 +1,24 @@
+# AI Virtual Mouse — cross-platform dependencies (Windows / macOS / Linux)
+# Easiest install:  python run.py setup
+# Manual install:   python -m pip install -r requirements.txt
+#
+# Supported Python: 3.9 – 3.12 (limited by the pinned MediaPipe release).
+# (MediaPipe itself pulls in opencv-contrib-python; both provide cv2 and coexist fine.)
+
+opencv-python==4.10.0.84
+mediapipe==0.10.20
+numpy<2
+PyAutoGUI==0.9.54
+Flask
+Flask-Limiter
+SpeechRecognition
+vosk
+screen-brightness-control
+
+# Windows-only audio control (other systems use built-in OS tools)
+pycaw; sys_platform == "win32"
+comtypes; sys_platform == "win32"
+
+# Note: PyAudio (microphone for voice commands) is installed separately by
+# `python run.py setup` because it needs system audio libraries on Linux/macOS.
+# If it is missing the app still works — only voice commands are disabled.
