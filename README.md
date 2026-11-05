@@ -139,3 +139,4 @@ The repository includes individual scripts such as `test_brightness.py`, `test_v
 - Vosk for offline speech recognition
 # AI-VIRTUAL-MOUSE-USING-HAND-GESTURES
 # AI-VIRTUAL-MOUSE-USING-HAND-GESTURES
+# AI-VIRTUAL-MOUSE-USING-HAND-GESTURES
